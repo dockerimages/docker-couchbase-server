@@ -4,11 +4,12 @@
 #
 # VERSION 0.9.4
 
-FROM ubuntu
+FROM dockerimages/ubuntu-baseimage
 MAINTAINER Brian Shumate, brian@couchbase.com
 
 ENV CB_VERSION 2.2.0
 ENV CB_DOWNLOAD_URL http://packages.couchbase.com/releases
+# http://packages.couchbase.com/releases/2.5.1/couchbase-server-enterprise_2.5.1_x86_64.deb
 ENV CB_PACKAGE couchbase-server-community_$CB_VERSION_x86_64.deb
 
 # Limits
@@ -28,11 +29,12 @@ RUN mkdir -p /var/run/sshd
 # Add Universe (for libssl0.9.8 dependency), update & install packages
 RUN sed -i.bak 's/main$/main universe/' /etc/apt/sources.list
 RUN apt-get -y update
-RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release openssh-server
+RUN apt-get -y install librtmp0 libssl0.9.8 lsb-release openssh-server wget
 
 # Download Couchbase Server package to /tmp & install
-ADD $CB_DOWNLOAD_URL/$CB_VERSION/$CB_PACKAGE /tmp/$CB_PACKAGE
-RUN dpkg -i /tmp/$CB_PACKAGE
+#  $CB_DOWNLOAD_URL/$CB_VERSION/$CB_PACKAGE /tmp/$CB_PACKAGE
+RUN wget -O /tmp/couchbase-server-community_2.2.0_x86_64.deb http://packages.couchbase.com/releases/2.2.0/couchbase-server-community_2.2.0_x86_64.deb
+RUN dpkg -i /tmp/couchbase-server-community_2.2.0_x86_64.deb
 
 # Open the OpenSSH server and Couchbase Server ports
 EXPOSE 22 4369 8091 8092 11209 11210 11211
